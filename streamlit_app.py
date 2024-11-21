@@ -8,7 +8,6 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris
-
 def main():
     st.title("Aplikasi Klasifikasi Machine Learning")
     st.sidebar.title("Pengaturan Model")
