@@ -9,18 +9,19 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris
 
-# Fungsi utama
 def main():
     st.title("Aplikasi Klasifikasi Machine Learning")
     st.sidebar.title("Pengaturan Model")
 
     # Pilih model
-    st.sidebar.write("### Pilih Model")
+    st.sidebar.write("Ivan nahak")
     model_name = st.sidebar.selectbox("Model Klasifikasi", ["SVM", "Random Forest"])
 
     # Load dataset
     st.write("### Pilih Dataset")
     dataset_name = st.selectbox("Pilih dataset", ["Iris", "Upload dataset Anda"])
+    X, y = None, None  # Inisialisasi awal
+
     if dataset_name == "Iris":
         data = load_iris(as_frame=True)
         X = data['data']
@@ -36,39 +37,39 @@ def main():
             X = df.iloc[:, :-1]
             y = df.iloc[:, -1]
 
-    # Split dataset
-    test_size = st.sidebar.slider("Persentase data uji (%)", 10, 50, 20) / 100
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
+    # Validasi dataset
+    if X is not None and y is not None:
+        # Split dataset
+        test_size = st.sidebar.slider("Persentase data uji (%)", 10, 50, 20) / 100
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
 
-    if model_name == "SVM":
-        # Parameter SVM
-        st.sidebar.write("### Parameter Model SVM")
-        kernel = st.sidebar.selectbox("Kernel", ["linear", "poly", "rbf", "sigmoid"])
-        C = st.sidebar.slider("C (Regularization)", 0.01, 10.0, 1.0)
+        if model_name == "SVM":
+            # Parameter SVM
+            st.sidebar.write("### Parameter Model SVM")
+            kernel = st.sidebar.selectbox("Kernel", ["linear", "poly", "rbf", "sigmoid"])
+            C = st.sidebar.slider("C (Regularization)", 0.01, 10.0, 1.0)
 
-        # Train SVM
-        if st.sidebar.button("Latih Model"):
-            model = SVC(kernel=kernel, C=C, random_state=42)
-            model.fit(X_train, y_train)
-            y_pred = model.predict(X_test)
+            # Train SVM
+            if st.sidebar.button("Latih Model"):
+                model = SVC(kernel=kernel, C=C, random_state=42)
+                model.fit(X_train, y_train)
+                y_pred = model.predict(X_test)
+                tampilkan_hasil(model_name, y_test, y_pred, X, X_train, y_train, X_test)
 
-            # Evaluasi Model
-            tampilkan_hasil(model_name, y_test, y_pred, X, X_train, y_train, X_test)
+        elif model_name == "Random Forest":
+            # Parameter Random Forest
+            st.sidebar.write("### Parameter Model Random Forest")
+            n_estimators = st.sidebar.slider("Jumlah Estimators", 10, 200, 100, 10)
+            max_depth = st.sidebar.slider("Kedalaman Maksimum", 1, 50, 10)
 
-    elif model_name == "Random Forest":
-        # Parameter Random Forest
-        st.sidebar.write("### Parameter Model Random Forest")
-        n_estimators = st.sidebar.slider("Jumlah Estimators", 10, 200, 100, 10)
-        max_depth = st.sidebar.slider("Kedalaman Maksimum", 1, 50, 10)
-
-        # Train Random Forest
-        if st.sidebar.button("Latih Model"):
-            model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, random_state=42)
-            model.fit(X_train, y_train)
-            y_pred = model.predict(X_test)
-
-            # Evaluasi Model
-            tampilkan_hasil(model_name, y_test, y_pred, X, X_train, y_train, X_test)
+            # Train Random Forest
+            if st.sidebar.button("Latih Model"):
+                model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, random_state=42)
+                model.fit(X_train, y_train)
+                y_pred = model.predict(X_test)
+                tampilkan_hasil(model_name, y_test, y_pred, X, X_train, y_train, X_test)
+    else:
+        st.warning("Silakan pilih dataset terlebih dahulu.")
 
 # Fungsi untuk menampilkan hasil
 def tampilkan_hasil(model_name, y_test, y_pred, X, X_train, y_train, X_test):
@@ -99,7 +100,6 @@ def tampilkan_hasil(model_name, y_test, y_pred, X, X_train, y_train, X_test):
         plt.xlabel("Fitur 1")
         plt.ylabel("Fitur 2")
         st.pyplot(plt)
-
 
 if __name__ == "__main__":
     main()
